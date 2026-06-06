@@ -40,7 +40,7 @@ const ACTION_CARDS: ActionCard[] = [
     title: 'Daily Quote',
     subtitle: 'Get inspired to cook',
     route: '/(tabs)/inspiration',
-    color: '#A05195',
+    color: '#B08850', // Premium warm gold-brown
   },
 ];
 

@@ -2,49 +2,49 @@
 
 export const Colors = {
   // Backgrounds
-  background: '#FAFAF8',
+  background: '#FAF9F6',
   surface: '#FFFFFF',
-  surfaceAlt: '#F3EFE9',
+  surfaceAlt: '#F5F3ED',
 
-  // Primary accent — warm amber
-  accent: '#D4813A',
-  accentLight: '#F5E6D3',
-  accentDark: '#A85C1E',
+  // Primary accent — terracotta / warm clay
+  accent: '#C87A53',
+  accentLight: '#F4ECE1',
+  accentDark: '#8E4A2A',
 
   // Text
-  textPrimary: '#1C1C1C',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
+  textPrimary: '#1E1E1C',
+  textSecondary: '#5C5C5A',
+  textMuted: '#8E8E8A',
 
   // Semantic
-  success: '#4A7C59',
-  successLight: '#D4EDDA',
-  danger: '#C0392B',
-  dangerLight: '#FADBD8',
+  success: '#4F775D',
+  successLight: '#E6EFEA',
+  danger: '#A94442',
+  dangerLight: '#F2DEDE',
 
   // Category badge backgrounds
-  categoryBreakfast: '#FFF3CD',
-  categoryLunch: '#D1ECF1',
-  categoryDinner: '#E2D9F3',
-  categoryDessert: '#FADADD',
+  categoryBreakfast: '#F9F2E6',
+  categoryLunch: '#E2ECE9',
+  categoryDinner: '#EBE5ED',
+  categoryDessert: '#F2E2E6',
 
   // Category badge text
-  categoryBreakfastText: '#856404',
-  categoryLunchText: '#0C5460',
-  categoryDinnerText: '#4A3A72',
-  categoryDessertText: '#7B2D35',
+  categoryBreakfastText: '#9E6F3E',
+  categoryLunchText: '#4C7368',
+  categoryDinnerText: '#655375',
+  categoryDessertText: '#8E4F5A',
 
   // Tab bar
-  tabActive: '#D4813A',
-  tabInactive: '#9CA3AF',
+  tabActive: '#C87A53',
+  tabInactive: '#8E8E8A',
   tabBar: '#FFFFFF',
 
   // Borders
-  border: '#E5E7EB',
-  borderFocus: '#D4813A',
+  border: '#EAE8E2',
+  borderFocus: '#C87A53',
 
   // Input
-  inputBg: '#F9F9F8',
+  inputBg: '#FAF9F6',
 };
 
 export const Typography = {

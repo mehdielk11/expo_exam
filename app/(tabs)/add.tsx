@@ -40,8 +40,8 @@ export default function AddScreen() {
       insertRecipe(title.trim(), instructions.trim(), category);
     }
 
-    Alert.alert('Recipe Saved! 🎉', `"${title.trim()}" has been added to your collection.`, [
-      { text: 'Great!' },
+    Alert.alert('Recipe Saved', `"${title.trim()}" has been added to your collection.`, [
+      { text: 'OK' },
     ]);
 
     // Reset form
