@@ -98,6 +98,32 @@ export function toggleRecipe(id: number, current: number): void {
   db().runSync('UPDATE recipes SET is_completed = ? WHERE id = ?;', next, id);
 }
 
+// ─── Update ──────────────────────────────────────────────────────────────────
+
+export function updateRecipe(
+  id: number,
+  title: string,
+  instructions: string,
+  category: string
+): void {
+  if (Platform.OS === 'web') {
+    const recipes = getRecipes();
+    const idx = recipes.findIndex((r) => r.id === id);
+    if (idx !== -1) {
+      recipes[idx] = { ...recipes[idx], title, instructions, category };
+      localStorage.setItem('recipes', JSON.stringify(recipes));
+    }
+    return;
+  }
+  db().runSync(
+    'UPDATE recipes SET title = ?, instructions = ?, category = ? WHERE id = ?;',
+    title,
+    instructions,
+    category,
+    id
+  );
+}
+
 // ─── Delete ──────────────────────────────────────────────────────────────────
 
 export function deleteRecipe(id: number): void {
