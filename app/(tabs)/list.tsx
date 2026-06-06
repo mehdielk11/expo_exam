@@ -37,6 +37,12 @@ const CATEGORY_STYLES: Record<string, CategoryStyle> = {
   Dessert:   { bg: Colors.categoryDessert,   text: Colors.categoryDessertText },
 };
 
+type CatFilter = 'All' | Category;
+type StatusFilter = 'All' | 'Cooked' | 'Uncooked';
+
+const CAT_OPTIONS: CatFilter[] = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert'];
+const STATUS_OPTIONS: StatusFilter[] = ['All', 'Cooked', 'Uncooked'];
+
 // ─── List Row ────────────────────────────────────────────────────────────────
 
 function RecipeItem({
@@ -378,11 +384,105 @@ function DetailModal({
   );
 }
 
+// ─── Filter Dropdown ───────────────────────────────────────────────────────────
+
+function FilterDropdown<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: T[];
+  onChange: (v: T) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const isActive = value !== 'All';
+
+  const handlePress = () => {
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        { options: ['Cancel', ...options], cancelButtonIndex: 0, title: label },
+        (idx) => { if (idx > 0) onChange(options[idx - 1]); }
+      );
+    } else {
+      setOpen(true);
+    }
+  };
+
+  return (
+    <>
+      <TouchableOpacity
+        style={[filt.pill, isActive && filt.pillActive]}
+        onPress={handlePress}
+        activeOpacity={0.75}
+      >
+        <Text style={[filt.pillLabel, isActive && filt.pillLabelActive]}>
+          {label}:
+        </Text>
+        <Text style={[filt.pillValue, isActive && filt.pillValueActive]}>
+          {value}
+        </Text>
+        <Ionicons
+          name="chevron-down"
+          size={13}
+          color={isActive ? Colors.accent : Colors.textMuted}
+        />
+      </TouchableOpacity>
+
+      {/* Web / Android option sheet */}
+      {open && (
+        <Modal
+          visible
+          transparent
+          animationType="fade"
+          onRequestClose={() => setOpen(false)}
+        >
+          <TouchableOpacity
+            style={filt.overlay}
+            activeOpacity={1}
+            onPress={() => setOpen(false)}
+          >
+            <View style={filt.sheet}>
+              <Text style={filt.sheetTitle}>{label}</Text>
+              {options.map((opt) => (
+                <TouchableOpacity
+                  key={opt}
+                  style={[
+                    filt.sheetRow,
+                    opt === value && filt.sheetRowActive,
+                  ]}
+                  onPress={() => { onChange(opt); setOpen(false); }}
+                >
+                  <Text
+                    style={[
+                      filt.sheetRowText,
+                      opt === value && filt.sheetRowTextActive,
+                    ]}
+                  >
+                    {opt}
+                  </Text>
+                  {opt === value && (
+                    <Ionicons name="checkmark" size={16} color={Colors.accent} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
+    </>
+  );
+}
+
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function ListScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selected, setSelected] = useState<Recipe | null>(null);
+  const [catFilter, setCatFilter] = useState<CatFilter>('All');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
 
   const loadRecipes = useCallback(() => {
     setRecipes(getRecipes());
@@ -390,19 +490,57 @@ export default function ListScreen() {
 
   useFocusEffect(loadRecipes);
 
+  const filtered = recipes.filter((r) => {
+    const catOk = catFilter === 'All' || r.category === catFilter;
+    const statusOk =
+      statusFilter === 'All' ||
+      (statusFilter === 'Cooked'   && r.is_completed === 1) ||
+      (statusFilter === 'Uncooked' && r.is_completed === 0);
+    return catOk && statusOk;
+  });
+
+  const hasActiveFilter = catFilter !== 'All' || statusFilter !== 'All';
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
 
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>My Recipes</Text>
         <Text style={styles.count}>
-          {recipes.length} {recipes.length === 1 ? 'recipe' : 'recipes'}
+          {filtered.length} {filtered.length === 1 ? 'recipe' : 'recipes'}
         </Text>
       </View>
 
+      {/* Filter Row */}
+      <View style={styles.filterRow}>
+        <FilterDropdown<CatFilter>
+          label="Category"
+          value={catFilter}
+          options={CAT_OPTIONS}
+          onChange={setCatFilter}
+        />
+        <FilterDropdown<StatusFilter>
+          label="Status"
+          value={statusFilter}
+          options={STATUS_OPTIONS}
+          onChange={setStatusFilter}
+        />
+        {hasActiveFilter && (
+          <TouchableOpacity
+            style={styles.clearBtn}
+            onPress={() => { setCatFilter('All'); setStatusFilter('All'); }}
+            hitSlop={8}
+          >
+            <Ionicons name="close-circle" size={16} color={Colors.textMuted} />
+            <Text style={styles.clearBtnText}>Clear</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
       <FlatList
-        data={recipes}
+        data={filtered}
         keyExtractor={(item: Recipe) => String(item.id)}
         renderItem={({ item }: { item: Recipe }) => (
           <RecipeItem item={item} onPress={setSelected} />
@@ -412,9 +550,13 @@ export default function ListScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Ionicons name="book-outline" size={56} color={Colors.border} />
-            <Text style={styles.emptyTitle}>No recipes yet</Text>
+            <Text style={styles.emptyTitle}>
+              {hasActiveFilter ? 'No matching recipes' : 'No recipes yet'}
+            </Text>
             <Text style={styles.emptySubtitle}>
-              Head to the Add tab to save your first recipe
+              {hasActiveFilter
+                ? 'Try adjusting your filters'
+                : 'Head to the Add tab to save your first recipe'}
             </Text>
           </View>
         }
@@ -537,6 +679,30 @@ const styles = StyleSheet.create({
     fontSize: Typography.fontSizeSm,
     color: Colors.textMuted,
     textAlign: 'center',
+  },
+  // filter row
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  clearBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginLeft: 'auto',
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 4,
+  },
+  clearBtnText: {
+    fontSize: Typography.fontSizeXs,
+    color: Colors.textMuted,
+    fontWeight: Typography.fontWeightMedium,
   },
 });
 
@@ -761,3 +927,84 @@ const modal = StyleSheet.create({
     color: Colors.danger,
   },
 });
+
+// ─── Styles: Filter Dropdown ──────────────────────────────────────────────────
+
+const filt = StyleSheet.create({
+  // trigger pill
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: Radius.full,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  pillActive: {
+    borderColor: Colors.accentLight,
+    backgroundColor: Colors.accentLight,
+  },
+  pillLabel: {
+    fontSize: Typography.fontSizeXs,
+    fontWeight: Typography.fontWeightMedium,
+    color: Colors.textMuted,
+  },
+  pillLabelActive: {
+    color: Colors.accentDark,
+  },
+  pillValue: {
+    fontSize: Typography.fontSizeSm,
+    fontWeight: Typography.fontWeightSemibold,
+    color: Colors.textPrimary,
+  },
+  pillValueActive: {
+    color: Colors.accent,
+  },
+  // overlay + sheet (web / Android)
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingTop: Spacing.md,
+    paddingBottom: Platform.OS === 'ios' ? 40 : Spacing.lg,
+    paddingHorizontal: Spacing.md,
+  },
+  sheetTitle: {
+    fontSize: Typography.fontSizeSm,
+    fontWeight: Typography.fontWeightSemibold,
+    color: Colors.textMuted,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+  },
+  sheetRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.xs,
+    borderRadius: Radius.sm,
+  },
+  sheetRowActive: {
+    backgroundColor: Colors.accentLight,
+  },
+  sheetRowText: {
+    fontSize: Typography.fontSizeBase,
+    color: Colors.textPrimary,
+    fontWeight: Typography.fontWeightMedium,
+  },
+  sheetRowTextActive: {
+    color: Colors.accent,
+    fontWeight: Typography.fontWeightSemibold,
+  },
+});
+
