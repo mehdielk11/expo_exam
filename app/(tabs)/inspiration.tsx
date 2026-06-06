@@ -36,11 +36,13 @@ export default function InspirationScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const fetchMeal = async () => {
     setLoading(true);
     setError(null);
     setSaved(false);
+    setExpanded(false);
     try {
       const res = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -141,7 +143,22 @@ export default function InspirationScreen() {
               <View style={styles.divider} />
               
               <Text style={styles.sectionLabel}>Instructions</Text>
-              <Text style={styles.instructionsText}>{meal.strInstructions}</Text>
+              <Text 
+                style={styles.instructionsText}
+                numberOfLines={expanded ? undefined : 4}
+              >
+                {meal.strInstructions}
+              </Text>
+
+              <TouchableOpacity
+                style={styles.readMoreBtn}
+                onPress={() => setExpanded(!expanded)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.readMoreText}>
+                  {expanded ? 'Show Less' : 'Read Full Instructions...'}
+                </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
                 style={[styles.saveBtn, saved && styles.saveBtnSaved]}
@@ -237,6 +254,11 @@ const styles = StyleSheet.create({
     minHeight: 220,
     justifyContent: 'center',
     marginBottom: Spacing.lg,
+    shadowColor: Colors.textPrimary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.05,
+    shadowRadius: 16,
+    elevation: 3,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -266,41 +288,59 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   categoryBadge: {
-    backgroundColor: Colors.categoryBreakfast || '#FDF2E9',
+    backgroundColor: Colors.categoryBreakfast,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: Radius.full,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   categoryText: {
     fontSize: Typography.fontSizeXs,
-    fontWeight: Typography.fontWeightSemibold,
-    color: Colors.categoryBreakfastText || '#D35400',
+    fontWeight: Typography.fontWeightBold,
+    color: Colors.categoryBreakfastText,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   recipeTitle: {
-    fontSize: Typography.fontSizeLg,
+    fontSize: Typography.fontSizeXl,
     color: Colors.textPrimary,
     fontWeight: Typography.fontWeightBold,
     marginBottom: Spacing.sm,
+    letterSpacing: -0.3,
   },
   divider: {
     height: 1,
     backgroundColor: Colors.border,
     width: '100%',
-    marginVertical: Spacing.sm,
+    marginVertical: Spacing.md,
   },
   sectionLabel: {
-    fontSize: Typography.fontSizeSm,
-    fontWeight: Typography.fontWeightSemibold,
+    fontSize: Typography.fontSizeXs,
+    fontWeight: Typography.fontWeightBold,
     color: Colors.textMuted,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: Spacing.xs,
+    letterSpacing: 1.0,
+    marginBottom: Spacing.sm,
   },
   instructionsText: {
     fontSize: Typography.fontSizeSm,
     color: Colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 22,
     width: '100%',
+  },
+  readMoreBtn: {
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
+    paddingVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  readMoreText: {
+    color: Colors.accent,
+    fontSize: Typography.fontSizeSm,
+    fontWeight: Typography.fontWeightBold,
   },
   saveBtn: {
     flexDirection: 'row',
@@ -308,16 +348,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.accent,
     borderRadius: Radius.md,
-    paddingVertical: 12,
-    paddingHorizontal: Spacing.lg,
+    paddingVertical: 14,
     gap: Spacing.xs,
     width: '100%',
     marginTop: Spacing.md,
+    shadowColor: Colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 2,
   },
   saveBtnSaved: {
     backgroundColor: Colors.successLight,
     borderWidth: 1.5,
     borderColor: Colors.success,
+    shadowOpacity: 0,
+    elevation: 0,
   },
   saveBtnText: {
     fontSize: Typography.fontSizeBase,
@@ -330,28 +376,32 @@ const styles = StyleSheet.create({
   refreshBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.accent,
+    backgroundColor: 'transparent',
+    borderWidth: 1.5,
+    borderColor: Colors.accent,
     borderRadius: Radius.md,
     paddingVertical: 14,
     paddingHorizontal: Spacing.xl,
     gap: Spacing.sm,
     width: '100%',
     justifyContent: 'center',
+    marginTop: Spacing.xs,
   },
   refreshBtnDisabled: {
-    backgroundColor: Colors.border,
+    borderColor: Colors.border,
   },
   refreshBtnText: {
     fontSize: Typography.fontSizeBase,
     fontWeight: Typography.fontWeightBold,
-    color: '#FFFFFF',
+    color: Colors.accent,
   },
   refreshBtnTextDisabled: {
     color: Colors.textMuted,
   },
   footnote: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
     fontSize: Typography.fontSizeXs,
     color: Colors.textMuted,
+    letterSpacing: 0.3,
   },
 });
