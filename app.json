@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "FlavorCraft",
+    "slug": "flavorcraft",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "flavorcraft",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#FAFAF8"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.flavorcraft.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FAFAF8"
+      },
+      "package": "com.flavorcraft.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
