@@ -8,12 +8,7 @@ export default function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
 
   useEffect(() => {
-    // expo-sqlite's web worker requires SharedArrayBuffer which needs
-    // cross-origin isolation headers not available in Metro dev server.
-    // This app targets Expo Go (native) — skip DB init on web.
-    if (Platform.OS !== 'web') {
-      initDB();
-    }
+    initDB();
     setDbReady(true);
   }, []);
 

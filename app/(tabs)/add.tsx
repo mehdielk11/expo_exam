@@ -36,9 +36,7 @@ export default function AddScreen() {
       return;
     }
 
-    if (Platform.OS !== 'web') {
-      insertRecipe(title.trim(), instructions.trim(), category);
-    }
+    insertRecipe(title.trim(), instructions.trim(), category);
 
     Alert.alert('Recipe Saved', `"${title.trim()}" has been added to your collection.`, [
       { text: 'OK' },

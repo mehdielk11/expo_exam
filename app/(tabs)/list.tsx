@@ -91,9 +91,7 @@ export default function ListScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
 
   const loadRecipes = useCallback(() => {
-    if (Platform.OS !== 'web') {
-      setRecipes(getRecipes());
-    }
+    setRecipes(getRecipes());
   }, []);
 
   useFocusEffect(loadRecipes);
