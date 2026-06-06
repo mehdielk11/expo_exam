@@ -515,18 +515,20 @@ export default function ListScreen() {
 
       {/* Filter Row */}
       <View style={styles.filterRow}>
-        <FilterDropdown<CatFilter>
-          label="Category"
-          value={catFilter}
-          options={CAT_OPTIONS}
-          onChange={setCatFilter}
-        />
-        <FilterDropdown<StatusFilter>
-          label="Status"
-          value={statusFilter}
-          options={STATUS_OPTIONS}
-          onChange={setStatusFilter}
-        />
+        <View style={styles.filterPills}>
+          <FilterDropdown<CatFilter>
+            label="Category"
+            value={catFilter}
+            options={CAT_OPTIONS}
+            onChange={setCatFilter}
+          />
+          <FilterDropdown<StatusFilter>
+            label="Status"
+            value={statusFilter}
+            options={STATUS_OPTIONS}
+            onChange={setStatusFilter}
+          />
+        </View>
         {hasActiveFilter && (
           <TouchableOpacity
             style={styles.clearBtn}
@@ -684,20 +686,24 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     backgroundColor: Colors.surface,
   },
+  filterPills: {
+    flexShrink: 1,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
   clearBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginLeft: 'auto',
     paddingHorizontal: Spacing.xs,
     paddingVertical: 4,
+    marginLeft: Spacing.xs,
   },
   clearBtnText: {
     fontSize: Typography.fontSizeXs,
