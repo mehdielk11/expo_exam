@@ -84,23 +84,24 @@ Ce document contient la structure détaillée, diapositive par diapositive, pour
 ---
 
 ## Slide 8 : Inspiration Culinaire & API Externe (TheMealDB)
-* **Recette Aléatoire** :
-  * Section dédiée à l'inspiration du jour pour découvrir une nouvelle recette provenant du monde entier.
-  * Intégration d'un flux d'API externe (TheMealDB API) pour récupérer une recette aléatoire avec son titre, sa catégorie et sa description/instructions.
-* **Aspect Technique** :
-  * Appel HTTP asynchrone non-bloquant.
-  * Gestion propre des états de chargement (Spinner d'attente) et des cas de perte de connexion réseau.
-  * Bouton interactif "Inspire Me Again" pour charger une nouvelle recette aléatoire instantanément.
-* **Emplacement Capture d'écran** : Capture de l'onglet Inspire (`inspiration.tsx`) affichant une recette chargée.
+* **Recette Aléatoire & Ergonomie** :
+  * Section dédiée à l'inspiration pour découvrir des recettes du monde entier via TheMealDB API.
+  * **Ergonomie mobile** : Lecture collapsible (bouton "Read More" limitant à 4 lignes par défaut) pour garder les boutons d'actions visibles sans défilement obligatoire.
+* **Sauvegarde en un Clic** :
+  * Bouton "Save to My Recipes" pour ajouter la recette inspirée directement dans la base SQLite locale.
+  * Mapping intelligent de la catégorie de l'API externe vers les 4 catégories locales de l'application (Breakfast, Lunch, Dinner, Dessert).
+* **Bouton de rafraîchissement** :
+  * Bouton "Inspire Me Again" avec style secondaire (outlined) pour créer une hiérarchie visuelle claire.
+* **Emplacement Capture d'écran** : Capture de l'onglet Inspire (`inspiration.tsx`) affichant la recette chargée, son bouton de sauvegarde et le bouton de rafraîchissement.
 
 ---
 
 ## Slide 9 : Explications Techniques
-* **Framework Core** : React Native & Expo (Architecture New Architecture activable).
-* **Navigation** : `expo-router` utilisant le routage par fichiers (Stack et Tabs imbriqués).
-* **Persistance des Données** : Base de données relationnelle locale **SQLite** (`expo-sqlite`) :
-  * Initialisation automatique des tables au lancement.
-  * Requêtes SQL optimisées pour la lecture, l'insertion, la mise à jour et la suppression.
+* **Framework Core** : React Native & Expo (Architecture New Architecture).
+* **Navigation** : `expo-router` utilisant le routage par fichiers (Stack et Tabs imbriqués, avec prise en charge dynamique des safe area insets).
+* **Persistance des Données (SQLite & Web LocalStorage)** :
+  * Utilisation de `expo-sqlite` sur mobile et de `LocalStorage` sur le Web pour stocker les recettes créées ou importées depuis l'API d'inspiration.
+  * Requêtes SQL optimisées pour les opérations CRUD et l'initialisation des tables.
 * **API Distante** : Module `fetch` asynchrone pointant sur l'API publique de TheMealDB (`https://www.themealdb.com/api/json/v1/1/random.php`).
 
 ---
